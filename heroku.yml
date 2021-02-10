@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: cd messgapi & gunicorn messgapi.wsgi:application --bind 0.0.0.0:$PORT
+  web: gunicorn messgapi.wsgi:application --bind 0.0.0.0:$PORT
