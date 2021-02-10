@@ -42,17 +42,40 @@ class MessageGETDetailsTest(MessageBaseTest):
         self.assertEqual(len(response_data), 3)
         self.assertEqual(response_data["text"], TEXT_20)
 
+    def test_get_increments_counter(self):
+        existing_id = 2
+        existing_counter = 5
+        message = Message.objects.get(id=existing_id)
+        message.counter = existing_counter
+        message.save()
+        self.assertEqual(Message.objects.get(id=existing_id).counter, existing_counter)
+
+        response = self.client.get(f"/api/messages/{existing_id}/")
+        response_data = response.json()
+
+        self.assertEqual(response_data["counter"], existing_counter + 1)
+        self.assertEqual(Message.objects.get(id=existing_id).counter, existing_counter + 1)
+
+    def test_get_fails_returns_message(self):
+        non_existing_id = 100
+
+        response = self.client.get(f"/api/messages/{non_existing_id}/")
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["message"], "Not found")
 
 class MessageGETListTest(MessageBaseTest):
     def test_get_returns_messages_list(self):
-        first_message_idx = 1
+        first_message_idx = 0
+        objects_added = 2
 
         response = self.client.get("/api/messages/")
         response_data = response.json()
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response_data), 3)
-        self.assertEqual(response_data["text"][first_message_idx], TEXT_20)
+        self.assertEqual(len(response_data), objects_added)
+        self.assertEqual(response_data[first_message_idx]["text"], TEXT_20)
 
 
 class MessagePOSTTest(MessageBaseTest):
@@ -66,23 +89,51 @@ class MessagePOSTTest(MessageBaseTest):
 
 
 class MessagePUTTest(MessageBaseTest):
-    def test_put_updates_message(self):
+    def test_put_update_message_and_reset_counter(self):
         existing_id = 1
         text_before_update = Message.objects.get(id=existing_id).text
 
         response = self.client.put(
             f"/api/messages/{existing_id}/", {"text": TEXT_60}, CONTENT_TYPE
         )
+        response_data = response.json()
         text_after_update = Message.objects.get(id=existing_id).text
 
         self.assertEqual(text_before_update, TEXT_20)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["text"], TEXT_60)
+        self.assertEqual(response_data["text"], TEXT_60)
         self.assertEqual(text_after_update, TEXT_60)
 
+    def test_put_reset_counter(self):
+        existing_id = 2
+        existing_counter = 5
+        zero_counter = 0
+        message = Message.objects.get(id=existing_id)
+        message.counter = existing_counter
+        message.save()
+        self.assertEqual(Message.objects.get(id=existing_id).counter, existing_counter)
 
-class MessageGETTest(MessageBaseTest):
-    def test_delete_deletes_messages(self):
+        response = self.client.put(
+            f"/api/messages/{existing_id}/", {"text": ""}, CONTENT_TYPE
+        )
+        response_data = response.json()
+
+        self.assertEqual(response_data["counter"], zero_counter)
+        self.assertEqual(Message.objects.get(id=existing_id).counter, zero_counter)
+
+    def test_put_fails_update_message(self):
+        non_existing_id = 100
+
+        response = self.client.put(
+            f"/api/messages/{non_existing_id}/", {"text": ""}, CONTENT_TYPE
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["message"], "Not found")
+
+
+class MessageDELETETest(MessageBaseTest):
+    def test_delete_deletes_message(self):
         existing_id = 1
         objects_added = 2
         objects_before_delete = Message.objects.all().count()
@@ -91,7 +142,15 @@ class MessageGETTest(MessageBaseTest):
         objects_after_delete = Message.objects.all().count()
 
         self.assertEqual(objects_before_delete, objects_added)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
         self.assertEqual(objects_after_delete, objects_added - 1)
         with self.assertRaises(ObjectDoesNotExist):
             Message.objects.get(id=existing_id)
+
+    def test_delete_fails_deletes_message(self):
+        non_existing_id = 100
+
+        response = self.client.delete(f"/api/messages/{non_existing_id}/")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["message"], "Not found")
