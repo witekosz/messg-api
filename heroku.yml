@@ -2,7 +2,7 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: gunicorn room_rent_service.wsgi:application --bind 0.0.0.0:$PORT
+  web: gunicorn messgapi.wsgi:application --bind 0.0.0.0:$PORT
 release:
   image: web
   command:
