@@ -1,11 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.test import TestCase
-from django.test import Client
-
-from main.models import Message
+from django.test import Client, TestCase
+from main.models import APIKey, Message
 
 
 CONTENT_TYPE = "application/json"
+TEST_API_KEY = "b8fd018e-6be3-11eb-9439-0242ac130002"
 TEXT_20 = "Lorem ipsum posuere."
 TEXT_40 = "Lorem ipsum dolor sit amet orci aliquam."
 TEXT_60 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit est."
@@ -21,11 +20,24 @@ TEXT_200 = """
 """
 
 
-class MessageBaseTest(TestCase):
+class AuthTest(TestCase):
     def setUp(self):
         self.client = Client()
+
+    def test_unauth_returns_401(self):
+        response = self.client.post("/api/messages/", {"text": ""}, CONTENT_TYPE)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json(), {"detail": "Unauthorized"})
+
+
+class MessageBaseTest(TestCase):
+    def setUp(self):
+        APIKey.objects.create(key=TEST_API_KEY)
         Message.objects.create(text=TEXT_20)
         Message.objects.create(text=TEXT_40)
+
+        self.client = Client(HTTP_X_API_Key=TEST_API_KEY)
 
     def tearDown(self):
         Message.objects.all().delete()
@@ -54,7 +66,9 @@ class MessageGETDetailsTest(MessageBaseTest):
         response_data = response.json()
 
         self.assertEqual(response_data["counter"], existing_counter + 1)
-        self.assertEqual(Message.objects.get(id=existing_id).counter, existing_counter + 1)
+        self.assertEqual(
+            Message.objects.get(id=existing_id).counter, existing_counter + 1
+        )
 
     def test_get_fails_returns_message(self):
         non_existing_id = 100
@@ -64,6 +78,7 @@ class MessageGETDetailsTest(MessageBaseTest):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["message"], "Not found")
+
 
 class MessageGETListTest(MessageBaseTest):
     def test_get_returns_messages_list(self):
@@ -80,9 +95,7 @@ class MessageGETListTest(MessageBaseTest):
 
 class MessagePOSTTest(MessageBaseTest):
     def test_post_creates_message(self):
-        response = self.client.post(
-            "/api/messages/", {"text": TEXT_60}, CONTENT_TYPE
-        )
+        response = self.client.post("/api/messages/", {"text": TEXT_60}, CONTENT_TYPE)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["text"], TEXT_60)
