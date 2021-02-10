@@ -25,7 +25,7 @@ SECRET_KEY = "=v_#jxy18^40bnjd#p+!9w_@9emrwrt-2=4_*r(^(!plp4v$(e"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["messg-api.herokuapp.com", "localhost"]
 
 
 # Application definition
