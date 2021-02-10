@@ -1,6 +1,6 @@
 build:
   docker:
-    web: app/Dockerfile
+    web: Dockerfile
 run:
   web: gunicorn room_rent_service.wsgi:application --bind 0.0.0.0:$PORT
 release:
