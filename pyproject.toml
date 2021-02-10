@@ -8,6 +8,7 @@ authors = ["witekosz <witekosz@gmail.com>"]
 python = "^3.8"
 Django = "^3.1.6"
 django-ninja = "^0.10.2"
+gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.7.0"

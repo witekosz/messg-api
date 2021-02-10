@@ -92,6 +92,20 @@ doc = ["mkdocs", "mkdocs-material", "markdown-include"]
 test = ["pytest", "pytest-cov", "pytest-django", "pytest-asyncio", "black"]
 
 [[package]]
+name = "gunicorn"
+version = "20.0.4"
+description = "WSGI HTTP Server for UNIX"
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[package.extras]
+eventlet = ["eventlet (>=0.9.7)"]
+gevent = ["gevent (>=0.13)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
+
+[[package]]
 name = "isort"
 version = "5.7.0"
 description = "A Python utility / library to sort Python imports."
@@ -184,7 +198,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "284cb22c038580cc88c6ed2851e7079cb58a2f0828209d8f312a993b84c4058d"
+content-hash = "3b58d668a2810d5e1b317f63303596dcd6a95a5295d06a5bdae51893fac66c4b"
 
 [metadata.files]
 appdirs = [
@@ -260,6 +274,10 @@ django = [
 django-ninja = [
     {file = "django-ninja-0.10.2.tar.gz", hash = "sha256:d514a0872ce3654f3652cf138f6263748083fb931f9cc7dfb2c1bb81f9ab7e47"},
     {file = "django_ninja-0.10.2-py3-none-any.whl", hash = "sha256:684a97952ec5f5dd7a8e3948fd44412d70d27c5b3796fac714ffdbe6b0fdddc2"},
+]
+gunicorn = [
+    {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
+    {file = "gunicorn-20.0.4.tar.gz", hash = "sha256:1904bb2b8a43658807108d59c3f3d56c2b6121a701161de0ddf9ad140073c626"},
 ]
 isort = [
     {file = "isort-5.7.0-py3-none-any.whl", hash = "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"},

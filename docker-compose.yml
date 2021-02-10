@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    restart: always
+    container_name: messg-api
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./messgapi/:/usr/src/app/
+    ports:
+      - "8000:8000"
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge
