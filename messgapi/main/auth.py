@@ -10,7 +10,7 @@ class ApiKey(APIKeyHeader):
         key = APIKey.objects.filter(key=key).first()
 
         if key:
-            return key
+            return key.key
         else:
             return None
 
