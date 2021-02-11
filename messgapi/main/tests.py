@@ -96,9 +96,19 @@ class MessageGETListTest(MessageBaseTest):
 class MessagePOSTTest(MessageBaseTest):
     def test_post_creates_message(self):
         response = self.client.post("/api/messages/", {"text": TEXT_60}, CONTENT_TYPE)
+        response_data = response.json()
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["text"], TEXT_60)
+        self.assertEqual(response_data["text"], TEXT_60)
+
+    def test_post_fails_create_long_message(self):
+        response = self.client.post("/api/messages/", {"text": TEXT_200}, CONTENT_TYPE)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response_data, {"message": "ensure text value has at most 160 characters"}
+        )
 
 
 class MessagePUTTest(MessageBaseTest):

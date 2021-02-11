@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Message(models.Model):
-    text = models.CharField(max_length=255, blank=True, null=True)
+    text = models.CharField(max_length=160, blank=True, null=True)
     counter = models.IntegerField(default=0)
 
 
