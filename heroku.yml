@@ -3,3 +3,8 @@ build:
     web: messgapi/Dockerfile
 run:
   web: gunicorn messgapi.wsgi:application --bind 0.0.0.0:$PORT
+release:
+  image: web
+  command:
+    - python manage.py collectstatic --noinput --clear
+    - python manage.py migrate --noinput
