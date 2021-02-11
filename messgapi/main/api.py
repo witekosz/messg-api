@@ -7,8 +7,8 @@ from ninja.responses import codes_4xx
 
 from .auth import header_key
 from .models import Message
-from .schemas import ErrorResponse, MessageResponse, MessageSend, SuccessResponse
-
+from .schemas import (ErrorResponse, MessageResponse, MessageSend,
+                      SuccessResponse)
 
 api = NinjaAPI()
 
