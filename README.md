@@ -21,6 +21,8 @@ SQLite database and Django development server.
 
 Recomended [poetry](https://github.com/python-poetry/poetry) for local development.
 
+You will need to add API key by django shell or manually in database.
+
 #### poetry
 
 1. Go to project root directory
